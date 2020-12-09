@@ -25,8 +25,12 @@ type Stream struct {
 	written    int64
 }
 
+const (
+	BufferSize = int64(4096 * 10)
+)
+
 func NewStream(key string, conn net.Conn) (*Stream, error) {
-	bufferSize := int64(4096)
+	bufferSize := BufferSize
 	buffer, err := circbuf.NewBuffer(bufferSize)
 	if err != nil {
 		return nil, err
