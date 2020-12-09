@@ -1,7 +1,12 @@
 <template>
     <div class="header">
-        <div v-for="stream in streams" v-bind:key="stream.key" :class="{ stream: true, selected: selected(stream) }">
-            <router-link :to="{ name: 'stream', params: { key: stream.key } }">{{ stream.key }}</router-link>
+        <div
+            v-for="stream in streams"
+            v-bind:key="stream.key"
+            :class="{ stream: true, selected: isSelected(stream) }"
+            v-on:click="select(stream)"
+        >
+            {{ stream.key }}
         </div>
     </div>
 </template>
@@ -18,8 +23,11 @@ export default Vue.extend({
         },
     },
     methods: {
-        selected(stream: Stream): boolean {
+        isSelected(stream: Stream): boolean {
             return stream.key == this.$route.params.key;
+        },
+        async select(stream: Stream): Promise<void> {
+            await this.$router.push({ name: "stream", params: { key: stream.key } });
         },
     },
 });
@@ -27,7 +35,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .header {
     display: flex;
-    justify-content: default;
+    justify-content: space-evenly;
 
     div {
         padding: 0.5em;

@@ -10,8 +10,14 @@ import { Stream } from "@/store/model";
 
 export default Vue.extend({
     name: "Home",
+    components: {
+        Header,
+    },
     data(): {} {
         return {};
+    },
+    mounted(): void {
+        console.log(`hello`);
     },
     computed: {
         streams(): Stream[] {

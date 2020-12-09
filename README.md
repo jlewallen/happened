@@ -5,6 +5,8 @@
 
 TODO Filtering
 TODO Highlighting
+TODO pre: white-space: pre-wrap
+
 
 ## Project setup
 ```

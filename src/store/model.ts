@@ -22,7 +22,9 @@ export class Tailed {
     constructor(public readonly key: string, public readonly blocks: Block[] = []) {}
 
     public append(res: TailResponse): Tailed {
-        this.blocks.push(new Block(this.blocks.length, res.body));
+        if (res.body.length > 0) {
+            this.blocks.push(new Block(this.blocks.length, res.body));
+        }
         this.moreUrl = res.moreUrl;
         return this;
     }

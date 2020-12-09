@@ -11,4 +11,9 @@ export default Vue.extend({
     name: "App",
 });
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+html {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+</style>

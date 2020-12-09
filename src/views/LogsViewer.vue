@@ -1,10 +1,6 @@
 <template>
-    <div>
-        <div class="logs-container">
-            <div v-for="block in tailed.blocks" v-bind:key="block.id">
-                <pre class="app-logs" @mousedown="down">{{ block.text }}</pre>
-            </div>
-        </div>
+    <div class="logs-container">
+        <pre v-for="block in tailed.blocks" v-bind:key="block.id" class="app-logs" @mousedown="down">{{ block.text }}</pre>
     </div>
 </template>
 <script lang="ts">
@@ -111,8 +107,14 @@ export default Vue.extend({
 });
 </script>
 <style lang="scss" scoped>
+.logs-container {
+    display: inline-block;
+}
+
 pre {
-    overflow: inherit;
+    // display: inline-block;
+    overflow-x: visible;
+    overflow: auto;
 }
 
 .app-logs {

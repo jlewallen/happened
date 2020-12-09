@@ -1,18 +1,12 @@
 <template>
-    <div class="stream">
-        <Tail :stream="stream" />
-    </div>
+    <div class="control-panel">Control Panel</div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import Tail from "./Tail.vue";
 import { Stream } from "@/store/model";
 
 export default Vue.extend({
-    name: "StreamViewer",
-    components: {
-        Tail,
-    },
+    name: "ControlPanel",
     props: {
         stream: {
             type: Object as PropType<Stream>,
@@ -21,9 +15,8 @@ export default Vue.extend({
     },
 });
 </script>
-<style lang="scss" scoped>
-.stream {
-    overflow-x: scroll;
-    overflow-y: scroll;
+<style lang="scss">
+.control-panel {
+    padding: 1em;
 }
 </style>

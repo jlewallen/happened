@@ -196,8 +196,8 @@ func middleware(sm *StreamManager, handler handlerFunc) http.HandlerFunc {
 func setupResponse(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Access-Control-Allow-Origin", "*")
 	res.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	res.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Hpn-More-Url, Hpn-Dropped")
-	res.Header().Set("Access-Control-Expose-Headers", "Content-Type, Hpn-More-Url, Hpn-Dropped")
+	res.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Hpn-More-Url, Hpn-Dropped, Hpn-Summary")
+	res.Header().Set("Access-Control-Expose-Headers", "Content-Type, Hpn-More-Url, Hpn-Dropped, Hpn-Summary")
 }
 
 type StreamResponse struct {
@@ -305,6 +305,7 @@ func streamHandler(sm *StreamManager, res http.ResponseWriter, req *http.Request
 
 	setupResponse(res, req)
 
+	res.Header().Set("Hpn-Summary", fmt.Sprintf("%d", len(sm.streams)))
 	res.Header().Set("Hpn-Dropped", fmt.Sprintf("%d", dropped))
 	res.Header().Set("Hpn-More-Url", fmt.Sprintf("/v1/streams/%s?position=%d", key, stream.written))
 	res.WriteHeader(http.StatusOK)

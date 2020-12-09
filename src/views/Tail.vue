@@ -1,10 +1,5 @@
 <template>
-    <div class="stream tail">
-        <h3>{{ stream.key }}</h3>
-        <div>
-            <LogsViewer :tailed="tailed" />
-        </div>
-    </div>
+    <LogsViewer :tailed="tailed" />
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
@@ -55,4 +50,7 @@ export default Vue.extend({
     },
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tail {
+}
+</style>
