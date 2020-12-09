@@ -1,13 +1,14 @@
 package main
 
 import (
-	"bufio"
+	_ "bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/gorilla/mux"
@@ -16,23 +17,26 @@ import (
 )
 
 type Stream struct {
-	key     string
-	conn    net.Conn
-	lock    sync.Mutex
-	buffer  *circbuf.Buffer
-	written int64
+	key        string
+	conn       net.Conn
+	lock       sync.Mutex
+	buffer     *circbuf.Buffer
+	bufferSize int64
+	written    int64
 }
 
 func NewStream(key string, conn net.Conn) (*Stream, error) {
-	buffer, err := circbuf.NewBuffer(4096 * 10)
+	bufferSize := int64(4096)
+	buffer, err := circbuf.NewBuffer(bufferSize)
 	if err != nil {
 		return nil, err
 	}
 	return &Stream{
-		key:     key,
-		conn:    conn,
-		buffer:  buffer,
-		written: 0,
+		key:        key,
+		conn:       conn,
+		buffer:     buffer,
+		bufferSize: bufferSize,
+		written:    0,
 	}, nil
 }
 
@@ -185,6 +189,13 @@ func middleware(sm *StreamManager, handler handlerFunc) http.HandlerFunc {
 	}
 }
 
+func setupResponse(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Access-Control-Allow-Origin", "*")
+	res.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	res.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, More-Url")
+	res.Header().Set("Access-Control-Expose-Headers", "Content-Type, More-Url")
+}
+
 type StreamResponse struct {
 	Key     string `json:"key"`
 	URL     string `json:"url"`
@@ -208,7 +219,6 @@ func streamsHandler(sm *StreamManager, res http.ResponseWriter, req *http.Reques
 			URL:     fmt.Sprintf("/v1/streams/%s", key),
 			Written: stream.written,
 		})
-		_ = stream
 	}
 
 	response := &StreamsResponse{
@@ -219,7 +229,10 @@ func streamsHandler(sm *StreamManager, res http.ResponseWriter, req *http.Reques
 	if err != nil {
 		return err
 	}
-	res.WriteHeader(200)
+
+	setupResponse(res, req)
+
+	res.WriteHeader(http.StatusOK)
 	res.Write(data)
 
 	return nil
@@ -229,13 +242,32 @@ func streamHandler(sm *StreamManager, res http.ResponseWriter, req *http.Request
 	vars := mux.Vars(req)
 	key := vars["key"]
 
+	position := int64(0)
+	maybePosition := req.URL.Query()["position"]
+	if len(maybePosition) == 1 {
+		if p, err := strconv.ParseInt(maybePosition[0], 10, 64); err != nil {
+			return err
+		} else {
+			position = p
+		}
+	}
+
+	parsed := false
+	if len(req.URL.Query()["parsed"]) > 0 {
+		parsed = true
+	}
+
+	_ = parsed
+
+	log.Printf("(%s) stream position=%d", key, position)
+
 	sm.lock.RLock()
 
 	defer sm.lock.RUnlock()
 
 	stream := sm.streams[key]
 	if stream == nil {
-		res.WriteHeader(404)
+		res.WriteHeader(http.StatusNotFound)
 		return nil
 	}
 
@@ -243,10 +275,38 @@ func streamHandler(sm *StreamManager, res http.ResponseWriter, req *http.Request
 
 	defer stream.lock.Unlock()
 
-	res.WriteHeader(200)
-	res.Write(stream.buffer.Bytes())
+	dropped := int64(0)
+	buffered := stream.buffer.Bytes()
+	data := buffered
+	if position > stream.written {
+		// Way out of bounds, so we can just treat this as fresh from the beginning.
+		log.Printf("(%s) written=%d position=%d overflow", key, stream.written, position)
+	} else if stream.written <= stream.bufferSize {
+		// Buffer is still filling up, so we're going to return from position to the end of the buffer.
+		log.Printf("(%s) written=%d position=%d filling", key, stream.written, position)
+		data = buffered[position:]
+	} else {
+		// Buffer is full so we need to adjust position based on that, but the buffer may not have all we need.
+		remaining := stream.written - position
+		if remaining > stream.bufferSize {
+			// Buffer has less than we need, so we return the whole thing and tell the client.
+			log.Printf("(%s) written=%d position=%d remaining=%d dropped logs", key, stream.written, position, remaining)
+			dropped = remaining - stream.bufferSize
+		} else {
+			// Most common scenario, we return the remaining bytes from the end of the buffer.
+			data = buffered[stream.bufferSize-remaining:]
+			log.Printf("(%s) written=%d position=%d remaining=%d", key, stream.written, position, remaining)
+		}
+	}
 
-	stream.buffer.Reset()
+	setupResponse(res, req)
+
+	if dropped > 0 {
+		res.Header().Set("Happened-Dropped", fmt.Sprintf("%d", dropped))
+	}
+	res.Header().Set("More-Url", fmt.Sprintf("/v1/streams/%s?position=%d", key, stream.written))
+	res.WriteHeader(http.StatusOK)
+	res.Write(data)
 
 	return nil
 }
