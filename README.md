@@ -1,5 +1,11 @@
 # happened
 
+
+## TODO
+
+TODO Filtering
+TODO Highlighting
+
 ## Project setup
 ```
 yarn install
