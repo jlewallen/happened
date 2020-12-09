@@ -1,7 +1,9 @@
 <template>
     <div>
-        <div v-for="block in tailed.blocks" v-bind:key="block.id">
-            <pre class="app-logs" @mousedown="down">{{ block.text }}</pre>
+        <div class="logs-container">
+            <div v-for="block in tailed.blocks" v-bind:key="block.id">
+                <pre class="app-logs" @mousedown="down">{{ block.text }}</pre>
+            </div>
         </div>
     </div>
 </template>

@@ -5,7 +5,6 @@
         </div>
     </div>
 </template>
-
 <script lang="ts">
 import Vue from "vue";
 import Tail from "./Tail.vue";
@@ -33,3 +32,8 @@ export default Vue.extend({
     },
 });
 </script>
+<style lang="scss">
+.home {
+    padding: 1em;
+}
+</style>
