@@ -21,8 +21,4 @@ export default Vue.extend({
     },
 });
 </script>
-<style lang="scss">
-.home {
-    padding: 1em;
-}
-</style>
+<style lang="scss"></style>

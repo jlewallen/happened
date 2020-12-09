@@ -1,12 +1,11 @@
 <template>
     <div class="home">
-        <div v-for="stream in streams" v-bind:key="stream.key">
-            <router-link :to="{ name: 'stream', params: { key: stream.key } }">{{ stream.key }}</router-link>
-        </div>
+        <Header />
     </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
+import Header from "./Header.vue";
 import { Stream } from "@/store/model";
 
 export default Vue.extend({

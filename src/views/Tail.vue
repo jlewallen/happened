@@ -26,24 +26,31 @@ export default Vue.extend({
     },
     data(): {
         tailed: Tailed;
+        visible: boolean;
     } {
         return {
             tailed: new Tailed(this.stream.key),
+            visible: true,
         };
     },
     async mounted(): Promise<void> {
+        console.log(`tail: mounted`);
+        this.visible = true;
         await this.refresh();
     },
     destroyed(): void {
-        // console.log(`destroyed`);
+        console.log(`tail: destroyed`);
+        this.visible = false;
     },
     methods: {
         async refresh(): Promise<void> {
-            const response = await tail(this.tailed.moreUrl ?? this.stream.url);
+            if (this.visible) {
+                const response = await tail(this.tailed.moreUrl ?? this.stream.url);
 
-            this.tailed.append(response);
+                this.tailed.append(response);
 
-            void Bluebird.delay(5000).then(() => this.refresh());
+                void Bluebird.delay(5000).then(() => this.refresh());
+            }
         },
     },
 });

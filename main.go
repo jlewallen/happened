@@ -137,7 +137,7 @@ func (sm *StreamManager) RemoveStream(s *Stream) error {
 
 	defer sm.lock.Unlock()
 
-	sm.streams[s.key] = nil
+	delete(sm.streams, s.key)
 
 	log.Printf("[sm] removed %s", s.key)
 
