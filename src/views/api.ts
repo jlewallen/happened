@@ -21,11 +21,22 @@ export async function query<V>(url: string): Promise<V> {
     return body as V;
 }
 
-export async function tail(url: string): Promise<{ body: string; moreUrl: string }> {
+export interface TailResponse {
+    body: string;
+    moreUrl: string;
+    dropped: number;
+}
+
+export async function tail(url: string): Promise<TailResponse> {
     const response = await run({ url });
-    const moreHeader = response.headers.get("more-url");
-    if (!moreHeader) throw new Error(`more-url missing`);
-    const moreUrl = moreHeader.toString();
+    const hpnDroppedHeader = response.headers.get("hpn-dropped");
+    if (!hpnDroppedHeader) throw new Error(`hpn-dropped missing`);
+    const hpnMoreHeader = response.headers.get("hpn-more-url");
+    if (!hpnMoreHeader) throw new Error(`hpn-more-url missing`);
     const body = await response.text();
-    return { body, moreUrl };
+    return {
+        body: body,
+        moreUrl: hpnMoreHeader.toString(),
+        dropped: Number(hpnDroppedHeader),
+    };
 }
