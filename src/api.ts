@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export interface Stream {
+export interface StreamResponse {
     key: string;
     url: string;
     written: number;

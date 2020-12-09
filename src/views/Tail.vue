@@ -2,15 +2,16 @@
     <div class="stream tail">
         <h3>{{ stream.key }}</h3>
         <div>
-            <LogsViewer :logs="tail" />
+            <LogsViewer :tailed="tailed" />
         </div>
     </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import Bluebird from "bluebird";
-import { query, tail, Stream } from "./api";
 import LogsViewer from "./LogsViewer.vue";
+import { tail } from "@/api";
+import { Stream, Tailed } from "@/store/model";
 
 export default Vue.extend({
     name: "Tail",
@@ -24,12 +25,10 @@ export default Vue.extend({
         },
     },
     data(): {
-        tail: string;
-        moreUrl: string | null;
+        tailed: Tailed;
     } {
         return {
-            tail: "",
-            moreUrl: null,
+            tailed: new Tailed(this.stream.key),
         };
     },
     async mounted(): Promise<void> {
@@ -40,13 +39,9 @@ export default Vue.extend({
     },
     methods: {
         async refresh(): Promise<void> {
-            const url = this.moreUrl ?? this.stream.url;
-            const response = await tail(url);
+            const response = await tail(this.tailed.moreUrl ?? this.stream.url);
 
-            console.log(`${JSON.stringify({ url: response.moreUrl })}`);
-
-            this.tail += response.body;
-            this.moreUrl = response.moreUrl;
+            this.tailed.append(response);
 
             void Bluebird.delay(5000).then(() => this.refresh());
         },

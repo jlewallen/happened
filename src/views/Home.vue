@@ -9,7 +9,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Tail from "./Tail.vue";
-import { query, Stream } from "./api";
+import { query, StreamResponse } from "@/api";
+import { Stream } from "@/store/model";
 
 export default Vue.extend({
     name: "Home",
@@ -24,9 +25,9 @@ export default Vue.extend({
         };
     },
     async mounted(): Promise<void> {
-        await query<{ streams: Stream[] }>("/v1/streams").then((reply) => {
+        await query<{ streams: StreamResponse[] }>("/v1/streams").then((reply) => {
             console.log(`reply: ${JSON.stringify(reply)}`);
-            this.streams = reply.streams;
+            this.streams = reply.streams.map((sr) => new Stream(sr));
             return reply;
         });
     },

@@ -1,13 +1,14 @@
 <template>
     <div>
-        <div>
-            <pre class="app-logs" @mousedown="down">{{ logs }}</pre>
+        <div v-for="block in tailed.blocks" v-bind:key="block.id">
+            <pre class="app-logs" @mousedown="down">{{ block.text }}</pre>
         </div>
     </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import FancyLine from "./FancyLine.vue";
+import { Tailed } from "@/store/model";
 
 interface FoundCaret {
     node: Node;
@@ -17,8 +18,8 @@ interface FoundCaret {
 export default Vue.extend({
     components: {},
     props: {
-        logs: {
-            type: String,
+        tailed: {
+            type: Object as PropType<Tailed>,
             required: true,
         },
     },
@@ -114,5 +115,12 @@ pre {
 
 .app-logs {
     font-size: 80%;
+}
+
+.app-logs {
+    padding-top: 0em;
+    padding-bottom: 0em;
+    margin-top: 0em;
+    margin-bottom: 0em;
 }
 </style>
