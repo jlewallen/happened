@@ -28,6 +28,8 @@ export default Vue.extend({
 </script>
 <style lang="scss">
 .home {
-    padding: 1em;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
 </style>

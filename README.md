@@ -6,7 +6,10 @@
 TODO Filtering
 TODO Highlighting
 TODO pre: white-space: pre-wrap
+TODO cross reference streams
 
+	Send GUID in a stream and eventually send details for that guid.
+	Send crypto signed block in beginning.
 
 ## Project setup
 ```
