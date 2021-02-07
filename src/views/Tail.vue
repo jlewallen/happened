@@ -44,6 +44,8 @@ export default Vue.extend({
 
                 this.tailed.append(response);
 
+                this.$emit("changed");
+
                 void Bluebird.delay(5000).then(() => this.refresh());
             }
         },
