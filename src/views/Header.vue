@@ -35,7 +35,8 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .header {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: start;
+    background-color: #303030;
 
     div {
         padding: 0.5em;

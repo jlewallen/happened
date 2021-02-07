@@ -18,8 +18,8 @@ export default Vue.extend({
     name: "Home",
     components: {
         Header,
-        StreamViewer,
         ControlPanel,
+        StreamViewer,
     },
     computed: {
         stream(): Stream | null {
@@ -37,17 +37,18 @@ export default Vue.extend({
 
 .stream-view .lower {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex: 1;
 }
 
 ::v-deep .lower .control-panel {
-    flex: 0 0 200px;
+    height: 130px;
 }
 
-::v-deep .lower .stream {
-    height: calc(100vh - 55px);
-    width: 100vh;
-    flex: 1;
+::v-deep #scrolling {
+    overflow-x: scroll;
+    overflow-y: scroll;
+    width: 100vw;
+    height: calc(100vh - 185px);
 }
 </style>

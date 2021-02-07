@@ -1,20 +1,43 @@
 <template>
     <div class="control-panel">
-        <form class="" @submit.prevent="search">
-            <div class="form-group row">
-                <label class="col-sm-12">Filter</label>
-                <div class="col-sm-12">
-                    <input class="form-control" type="text" v-model="form.filter" />
+        <form @submit.prevent="search">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.filter" placeholder="Filter" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.highlighting" placeholder="Highlight" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-12">Highlight</label>
-                <div class="col-sm-12">
-                    <input class="form-control" type="text" v-model="form.highlighting" />
+                <div class="col-sm-4" v-if="false">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.filter" placeholder="Filter" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.highlighting" placeholder="Highlight" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <div class="col-sm-4" v-if="false">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.filter" placeholder="Filter" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input class="form-control" type="text" v-model="form.highlighting" placeholder="Highlight" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -54,5 +77,6 @@ export default Vue.extend({
 <style lang="scss">
 .control-panel {
     padding: 1em;
+    background-color: #303030;
 }
 </style>

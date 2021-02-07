@@ -1,5 +1,5 @@
 <template>
-    <div class="stream" id="scrolling">
+    <div id="scrolling">
         <Tail :stream="stream" @changed="onChanged" />
     </div>
 </template>
@@ -29,9 +29,4 @@ export default Vue.extend({
     },
 });
 </script>
-<style lang="scss" scoped>
-.stream {
-    overflow-x: scroll;
-    overflow-y: scroll;
-}
-</style>
+<style lang="scss" scoped></style>
