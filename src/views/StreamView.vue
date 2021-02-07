@@ -1,9 +1,9 @@
 <template>
     <div class="stream-view">
-        <Header />
+        <Header :expanded="expanded" @expanded="onExpandedToggle" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
-            <ControlPanel :stream="stream" />
-            <StreamViewer :stream="stream" />
+            <ControlPanel :stream="stream" v-if="expanded" />
+            <StreamViewer :stream="stream" v-bind:class="{ expanded: expanded }" @changed="onChanged" />
         </div>
     </div>
 </template>
@@ -21,9 +21,28 @@ export default Vue.extend({
         ControlPanel,
         StreamViewer,
     },
+    data(): {
+        expanded: boolean;
+    } {
+        return {
+            expanded: false,
+        };
+    },
     computed: {
         stream(): Stream | null {
             return this.$store.state.streams.find((stream: Stream) => stream.key == this.$route.params.key);
+        },
+    },
+    methods: {
+        onExpandedToggle(expanded: boolean): void {
+            this.expanded = expanded;
+            this.onChanged();
+        },
+        onChanged(): void {
+            this.$nextTick(() => {
+                const el = this.$el.querySelector("#scrolling");
+                el.scrollTop = el.scrollHeight;
+            });
         },
     },
 });
@@ -49,6 +68,10 @@ export default Vue.extend({
     overflow-x: scroll;
     overflow-y: scroll;
     width: 100vw;
+    height: calc(100vh - 55px);
+}
+
+::v-deep #scrolling.expanded {
     height: calc(100vh - 185px);
 }
 </style>

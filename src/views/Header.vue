@@ -1,5 +1,6 @@
 <template>
     <div class="header">
+        <div class="config" v-on:click="onConfig">Config</div>
         <div
             v-for="stream in streams"
             v-bind:key="stream.key"
@@ -16,7 +17,12 @@ import { Stream } from "@/store/model";
 
 export default Vue.extend({
     name: "Header",
-    components: {},
+    props: {
+        expanded: {
+            type: Boolean,
+            default: false,
+        },
+    },
     computed: {
         streams(): Stream[] {
             return this.$store.state.streams;
@@ -29,6 +35,9 @@ export default Vue.extend({
         async select(stream: Stream): Promise<void> {
             await this.$router.push({ name: "stream", params: { key: stream.key } });
         },
+        onConfig(): void {
+            this.$emit("expanded", !this.expanded);
+        },
     },
 });
 </script>
@@ -37,13 +46,14 @@ export default Vue.extend({
     display: flex;
     justify-content: start;
     background-color: #303030;
+    padding: 0.5em;
 
     div {
         padding: 0.5em;
         margin: 0.5em;
-        border: 1px black solid;
         border-radius: 4px;
         background: #6495ed;
+        cursor: pointer;
         a {
             color: black;
         }
@@ -52,6 +62,11 @@ export default Vue.extend({
     div.selected {
         font-weight: bold;
         background: #5f9ea0;
+    }
+
+    div.config {
+        background: #a9a9a9;
+        align-self: end;
     }
 }
 </style>

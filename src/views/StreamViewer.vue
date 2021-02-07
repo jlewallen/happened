@@ -21,10 +21,7 @@ export default Vue.extend({
     },
     methods: {
         onChanged(): void {
-            this.$nextTick(() => {
-                const el = this.$el;
-                el.scrollTop = el.scrollHeight;
-            });
+            this.$emit("changed");
         },
     },
 });
