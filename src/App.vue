@@ -12,9 +12,11 @@ import { RefreshAction } from "@/store";
 export default Vue.extend({
     name: "App",
     mounted(): void {
-        setInterval(async (): Promise<void> => {
-            await this.refresh();
-        }, 1000);
+        if (false) {
+            setInterval(async (): Promise<void> => {
+                await this.refresh();
+            }, 1000);
+        }
     },
     methods: {
         async refresh(): Promise<void> {
