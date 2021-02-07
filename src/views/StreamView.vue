@@ -3,7 +3,7 @@
         <Header :expanded="expanded" @expanded="onExpandedToggle" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
             <ControlPanel :stream="stream" v-if="expanded" />
-            <StreamViewer :stream="stream" v-bind:class="{ expanded: expanded }" @changed="onChanged" />
+            <StreamViewer :stream="stream" v-bind:class="{ expanded: expanded }" @changed="onChanged" @scrolled="onScrolled" />
         </div>
     </div>
 </template>
@@ -23,9 +23,11 @@ export default Vue.extend({
     },
     data(): {
         expanded: boolean;
+        bottom: boolean;
     } {
         return {
             expanded: false,
+            bottom: true,
         };
     },
     computed: {
@@ -38,11 +40,19 @@ export default Vue.extend({
             this.expanded = expanded;
             this.onChanged();
         },
+        onScrolled(args: { bottom: boolean }): void {
+            if (this.bottom != args.bottom) {
+                console.log("bottom", args.bottom);
+            }
+            this.bottom = args.bottom;
+        },
         onChanged(): void {
-            this.$nextTick(() => {
-                const el = this.$el.querySelector("#scrolling");
-                el.scrollTop = el.scrollHeight;
-            });
+            if (this.bottom) {
+                this.$nextTick(() => {
+                    const el = this.$el.querySelector("#scrolling");
+                    el.scrollTop = el.scrollHeight;
+                });
+            }
         },
     },
 });
