@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -181,10 +182,20 @@ func listen(sm *StreamManager) error {
 		}
 
 		go func() {
+			started := time.Now()
+
 			source.handle(ctx)
 
-			if err := sm.RemoveStream(stream); err != nil {
-				log.Printf("remove error: %v", err)
+			elapsed := time.Now().Sub(started)
+
+			required := 5 * time.Second
+			if elapsed > required {
+				log.Printf("removing stream %v", elapsed)
+				if err := sm.RemoveStream(stream); err != nil {
+					log.Printf("remove error: %v", err)
+				}
+			} else {
+				log.Printf("leaving stream %v", elapsed)
 			}
 		}()
 	}
