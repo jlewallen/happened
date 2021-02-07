@@ -33,7 +33,9 @@ export default Vue.extend({
             return stream.key == this.$route.params.key;
         },
         async select(stream: Stream): Promise<void> {
-            await this.$router.push({ name: "stream", params: { key: stream.key } });
+            if (stream.key != this.$route.params.key) {
+                await this.$router.push({ name: "stream", params: { key: stream.key } });
+            }
         },
         onConfig(): void {
             this.$emit("expanded", !this.expanded);
