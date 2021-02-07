@@ -1,6 +1,6 @@
 <template>
     <div class="stream-view">
-        <Header :expanded="expanded" @expanded="onExpandedToggle" />
+        <Header :expanded="expanded" @expanded="onExpandedToggle" @refreshed="onRefreshed" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
             <ControlPanel :stream="stream" v-if="expanded" />
             <StreamViewer :stream="stream" v-bind:class="{ expanded: expanded }" @changed="onChanged" @scrolled="onScrolled" />
@@ -15,7 +15,7 @@ import ControlPanel from "./ControlPanel.vue";
 import { Stream } from "@/store/model";
 
 export default Vue.extend({
-    name: "Home",
+    name: "StreamView",
     components: {
         Header,
         ControlPanel,
@@ -48,11 +48,14 @@ export default Vue.extend({
         },
         onChanged(): void {
             if (this.bottom) {
-                this.$nextTick(() => {
-                    const el = this.$el.querySelector("#scrolling");
-                    el.scrollTop = el.scrollHeight;
-                });
+                this.onRefreshed();
             }
+        },
+        onRefreshed(): void {
+            this.$nextTick(() => {
+                const el = this.$el.querySelector("#scrolling");
+                el.scrollTop = el.scrollHeight;
+            });
         },
     },
 });

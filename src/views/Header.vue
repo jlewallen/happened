@@ -35,6 +35,8 @@ export default Vue.extend({
         async select(stream: Stream): Promise<void> {
             if (stream.key != this.$route.params.key) {
                 await this.$router.push({ name: "stream", params: { key: stream.key } });
+            } else {
+                this.$emit("refreshed");
             }
         },
         onConfig(): void {
