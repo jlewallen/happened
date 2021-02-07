@@ -10,6 +10,8 @@ import (
 	"sync"
 
 	"github.com/armon/circbuf"
+
+	"github.com/jlewallen/happened/server/common"
 )
 
 const (
@@ -128,9 +130,16 @@ func (s *TcpTextSource) write(b []byte) error {
 func (s *TcpTextSource) tail() error {
 	defer s.conn.Close()
 
+	reader, handshake, err := common.TryParseHandshake(s.conn)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[%s] handshake %v", Key, handshake)
+
 	buf := make([]byte, 4096)
 	for {
-		bytesRead, err := s.conn.Read(buf)
+		bytesRead, err := reader.Read(buf)
 		if err != nil {
 			if err == io.EOF {
 				log.Printf("[%s] eof", Key)
