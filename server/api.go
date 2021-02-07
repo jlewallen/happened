@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -70,6 +71,10 @@ func streamsIndexHandler(sm *StreamManager, res http.ResponseWriter, req *http.R
 	response := &StreamsResponse{
 		Streams: streams,
 	}
+
+	sort.SliceStable(response.Streams, func(i, j int) bool {
+		return response.Streams[i].Key < response.Streams[j].Key
+	})
 
 	data, err := json.Marshal(response)
 	if err != nil {
