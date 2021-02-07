@@ -84,12 +84,16 @@ func (s *TcpTextSource) Tail(ctx context.Context, pos Position) (*TailResponse, 
 		}
 	}
 
+	blocks := make([]string, 0)
+
+	if len(data) > 0 {
+		blocks = append(blocks, string(data))
+	}
+
 	return &TailResponse{
 		MoreURL: fmt.Sprintf("position=%d", s.written),
 		Dropped: dropped > 0,
-		Blocks: []string{
-			string(data),
-		},
+		Blocks:  blocks,
 	}, nil
 }
 

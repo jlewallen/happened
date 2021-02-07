@@ -23,6 +23,7 @@ export async function query<V>(url: string): Promise<V> {
 
 export interface TailResponse {
     body: string;
+    empty: boolean;
     moreUrl: string;
 }
 
@@ -40,12 +41,14 @@ export async function tail(url: string): Promise<TailResponse> {
         console.log(`unimplemented`);
         return {
             body: "",
+            empty: true,
             moreUrl: body.more,
         };
     }
 
     return {
         body: body.blocks.join(" "),
+        empty: body.blocks.length == 0,
         moreUrl: body.more,
     };
 }

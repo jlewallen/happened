@@ -42,9 +42,11 @@ export default Vue.extend({
             if (this.visible) {
                 const response = await tail(this.tailed.moreUrl ?? this.stream.url);
 
-                this.tailed.append(response);
+                if (!response.empty) {
+                    this.tailed.append(response);
 
-                this.$emit("changed");
+                    this.$emit("changed");
+                }
 
                 void Bluebird.delay(5000).then(() => this.refresh());
             }
