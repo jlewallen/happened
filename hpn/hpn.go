@@ -5,8 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/jlewallen/happened/server/common"
 )
@@ -15,6 +17,7 @@ type options struct {
 	Name    string
 	Address string
 	Port    int
+	Retry   bool
 }
 
 func pipe(o *options) error {
@@ -54,10 +57,21 @@ func main() {
 	flag.StringVar(&o.Name, "name", "", "stream name")
 	flag.StringVar(&o.Address, "address", "127.0.0.1", "happened server address")
 	flag.IntVar(&o.Port, "port", 2570, "happened server port")
+	flag.BoolVar(&o.Retry, "retry", true, "retry connection attempts")
 
 	flag.Parse()
 
-	if err := pipe(o); err != nil {
-		panic(err)
+	for {
+		if err := pipe(o); err != nil {
+			log.Printf("error %v", err)
+		} else {
+			break
+		}
+
+		if !o.Retry {
+			break
+		} else {
+			time.Sleep(1 * time.Second)
+		}
 	}
 }

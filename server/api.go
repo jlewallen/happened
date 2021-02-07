@@ -184,7 +184,7 @@ func listen(sm *StreamManager) error {
 			source.handle(ctx)
 
 			if err := sm.RemoveStream(stream); err != nil {
-				log.Printf("error %v", err)
+				log.Printf("remove error: %v", err)
 			}
 		}()
 	}
