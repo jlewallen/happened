@@ -11,3 +11,6 @@ build/hserver: server/*.go server/common/*.go
 
 clean:
 	rm -rf build
+
+install: default
+	cp build/hpn ~/tools/bin
