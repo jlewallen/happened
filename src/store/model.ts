@@ -6,11 +6,13 @@ export class Block {
 
 export class Stream {
     public readonly key: string;
+    public readonly name: string;
     public readonly url: string;
     public readonly written: number;
 
     constructor(public readonly sr: StreamResponse, public readonly tail: Block[] = []) {
         this.key = sr.key;
+        this.name = sr.name;
         this.url = sr.url;
         this.written = sr.written;
     }

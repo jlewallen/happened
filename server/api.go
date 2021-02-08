@@ -33,6 +33,7 @@ func setupResponse(res http.ResponseWriter, req *http.Request) {
 
 type StreamResponse struct {
 	Key     string `json:"key"`
+	Name    string `json:"name"`
 	URL     string `json:"url"`
 	Written int64  `json:"written"`
 }
@@ -63,6 +64,7 @@ func streamsIndexHandler(sm *StreamManager, res http.ResponseWriter, req *http.R
 	for key, stream := range sm.streams {
 		streams = append(streams, &StreamResponse{
 			Key:     key,
+			Name:    stream.name,
 			URL:     fmt.Sprintf("/v1/streams/%s", key),
 			Written: stream.source.Written(),
 		})
@@ -135,8 +137,6 @@ func streamHandler(sm *StreamManager, res http.ResponseWriter, req *http.Request
 
 	res.Write(data)
 
-	log.Printf("done")
-
 	return nil
 }
 
@@ -189,7 +189,7 @@ func listen(sm *StreamManager) error {
 		go func() {
 			started := time.Now()
 
-			source.handle(ctx)
+			source.handle(ctx, stream)
 
 			elapsed := time.Now().Sub(started)
 

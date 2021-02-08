@@ -7,7 +7,7 @@
             :class="{ stream: true, selected: isSelected(stream) }"
             v-on:click="select(stream)"
         >
-            {{ stream.key }}
+            {{ stream.name }}
         </div>
     </div>
 </template>

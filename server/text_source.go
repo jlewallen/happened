@@ -101,8 +101,8 @@ func (s *TcpTextSource) Written() int64 {
 	return s.written
 }
 
-func (s *TcpTextSource) handle(ctx context.Context) {
-	if err := s.tail(); err != nil {
+func (s *TcpTextSource) handle(ctx context.Context, stream *Stream) {
+	if err := s.tail(stream); err != nil {
 		log.Printf("error: %v", err)
 	}
 }
@@ -131,7 +131,7 @@ func (s *TcpTextSource) write(b []byte) error {
 	return nil
 }
 
-func (s *TcpTextSource) tail() error {
+func (s *TcpTextSource) tail(stream *Stream) error {
 	defer s.conn.Close()
 
 	reader, handshake, err := common.TryParseHandshake(s.conn)
@@ -140,6 +140,10 @@ func (s *TcpTextSource) tail() error {
 	}
 
 	log.Printf("[%s] handshake %v", Key, handshake)
+
+	if err := stream.Configure(handshake); err != nil {
+		return err
+	}
 
 	buf := make([]byte, 4096)
 	for {
