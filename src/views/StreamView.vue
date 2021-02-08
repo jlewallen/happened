@@ -3,7 +3,13 @@
         <Header :expanded="expanded" @expanded="onExpandedToggle" @refreshed="onRefreshed" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
             <ControlPanel :stream="stream" v-if="expanded" />
-            <StreamViewer :stream="stream" v-bind:class="{ expanded: expanded }" @changed="onChanged" @scrolled="onScrolled" />
+            <StreamViewer
+                :stream="stream"
+                v-bind:class="{ expanded: expanded }"
+                @changed="onChanged"
+                @scrolled="onScrolled"
+                @fancy-line="onFancyLine"
+            />
         </div>
     </div>
 </template>
@@ -56,6 +62,9 @@ export default Vue.extend({
                 const el = this.$el.querySelector("#scrolling");
                 el.scrollTop = el.scrollHeight;
             });
+        },
+        onFancyLine(fancyLine: never): void {
+            // this.onChanged();
         },
     },
 });

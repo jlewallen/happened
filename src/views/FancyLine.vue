@@ -85,7 +85,8 @@ export default Vue.extend({
 }
 
 .extras {
-    margin-top: 1em;
-    margin-bottom: 1em;
+    // background-color: #333;
+    margin-top: 0em;
+    margin-bottom: 0em;
 }
 </style>

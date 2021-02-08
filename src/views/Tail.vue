@@ -1,5 +1,5 @@
 <template>
-    <LogsViewer :tailed="tailed" />
+    <LogsViewer :tailed="tailed" @fancy-line="onFancyLine" />
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
@@ -50,6 +50,9 @@ export default Vue.extend({
 
                 void Bluebird.delay(5000).then(() => this.refresh());
             }
+        },
+        onFancyLine(fancyLine: never): void {
+            this.$emit("fancy-line", fancyLine);
         },
     },
 });

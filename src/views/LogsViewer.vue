@@ -100,7 +100,9 @@ export default Vue.extend({
                 fancy.className = "fancy-container";
                 replacingNode.replaceWith(fancy);
                 console.log(`down`, cp.offset, range, hasNl, line);
-                new FancyLine({ propsData: { line: line } }).$mount(fancy);
+                const fancyLine = new FancyLine({ propsData: { line: line } }).$mount(fancy);
+
+                this.$emit("fancy-line", fancyLine);
             }
         },
     },

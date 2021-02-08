@@ -1,6 +1,6 @@
 <template>
     <div id="scrolling" v-on:scroll="onScroll">
-        <Tail :stream="stream" @changed="onChanged" />
+        <Tail :stream="stream" @changed="onChanged" @fancy-line="onFancyLine" />
     </div>
 </template>
 <script lang="ts">
@@ -35,6 +35,9 @@ export default Vue.extend({
                 );
             }
             this.$emit("scrolled", { bottom: bottom });
+        },
+        onFancyLine(fancyLine: never): void {
+            this.$emit("fancy-line", fancyLine);
         },
     },
 });
