@@ -20,9 +20,7 @@ type options struct {
 	Retry   bool
 }
 
-func pipe(o *options) error {
-	reader := bufio.NewReader(os.Stdin)
-
+func pipeReader(o *options, hs *common.Handshake, r io.Reader) error {
 	dialing := fmt.Sprintf("%s:%d", o.Address, o.Port)
 	conn, err := net.Dial("tcp", dialing)
 	if err != nil {
@@ -30,10 +28,6 @@ func pipe(o *options) error {
 	}
 
 	defer conn.Close()
-
-	hs := common.Handshake{
-		Name: o.Name,
-	}
 
 	encoded, err := hs.Encode()
 	if err != nil {
@@ -44,11 +38,24 @@ func pipe(o *options) error {
 		return err
 	}
 
+	reader := bufio.NewReader(r)
+
 	if _, err := io.Copy(conn, reader); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func pipeFile(o *options, hs *common.Handshake, path string) error {
+	r, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	defer r.Close()
+
+	return pipeReader(o, hs, r)
 }
 
 func main() {
@@ -61,17 +68,33 @@ func main() {
 
 	flag.Parse()
 
-	for {
-		if err := pipe(o); err != nil {
-			log.Printf("error %v", err)
-		} else {
-			break
-		}
+	if flag.NArg() > 0 {
+		for _, arg := range flag.Args() {
+			hs := &common.Handshake{
+				Name: arg,
+			}
 
-		if !o.Retry {
-			break
-		} else {
-			time.Sleep(1 * time.Second)
+			if err := pipeFile(o, hs, arg); err != nil {
+				panic(err)
+			}
+		}
+	} else {
+		for {
+			hs := &common.Handshake{
+				Name: o.Name,
+			}
+
+			if err := pipeReader(o, hs, os.Stdin); err != nil {
+				log.Printf("error %v", err)
+			} else {
+				break
+			}
+
+			if !o.Retry {
+				break
+			} else {
+				time.Sleep(1 * time.Second)
+			}
 		}
 	}
 }
