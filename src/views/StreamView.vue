@@ -93,6 +93,7 @@ export default Vue.extend({
 ::v-deep #scrolling {
     overflow-x: scroll;
     overflow-y: scroll;
+    padding: 10px;
     width: 100vw;
     height: calc(100vh - 70px);
 }
