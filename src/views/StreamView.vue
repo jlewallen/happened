@@ -60,7 +60,11 @@ export default Vue.extend({
         onRefreshed(): void {
             this.$nextTick(() => {
                 const el = this.$el.querySelector("#scrolling");
-                el.scrollTop = el.scrollHeight;
+                if (el) {
+                    el.scrollTop = el.scrollHeight;
+                } else {
+                    console.info(`missing #scrolling`);
+                }
             });
         },
         onFancyLine(fancyLine: never): void {

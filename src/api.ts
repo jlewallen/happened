@@ -2,6 +2,7 @@ import _ from "lodash";
 
 export interface StreamResponse {
     key: string;
+    name: string;
     url: string;
     written: number;
 }

@@ -24,17 +24,20 @@ export default Vue.extend({
             this.$emit("changed");
         },
         onScroll(ev: Event): void {
-            const bottom = ev.target.scrollTop + ev.target.clientHeight == ev.target.scrollHeight;
-            if (false) {
+            const target = ev.target as HTMLElement;
+            if (target) {
+                const bottom = target.scrollTop + target.clientHeight == target.scrollHeight;
+                /*
                 console.log(
-                    ev.target.clientHeight,
-                    ev.target.offsetHeight,
-                    ev.target.scrollTop,
-                    ev.target.scrollHeight,
-                    ev.target.scrollHeight - ev.target.scrollTop
+                    target.clientHeight,
+                    target.offsetHeight,
+                    target.scrollTop,
+                    target.scrollHeight,
+                    target.scrollHeight - ev.target.scrollTop
                 );
+				*/
+                this.$emit("scrolled", { bottom: bottom });
             }
-            this.$emit("scrolled", { bottom: bottom });
         },
         onFancyLine(fancyLine: never): void {
             this.$emit("fancy-line", fancyLine);

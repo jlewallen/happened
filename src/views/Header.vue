@@ -49,7 +49,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .header {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     background-color: #303030;
     padding: 0.5em;
 
