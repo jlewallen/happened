@@ -70,12 +70,16 @@ func main() {
 
 	if flag.NArg() > 0 {
 		for _, arg := range flag.Args() {
-			hs := &common.Handshake{
-				Name: arg,
-			}
+			if _, err := os.Stat(arg); !os.IsNotExist(err) {
+				hs := &common.Handshake{
+					Name: arg,
+				}
 
-			if err := pipeFile(o, hs, arg); err != nil {
-				panic(err)
+				if err := pipeFile(o, hs, arg); err != nil {
+					panic(err)
+				}
+			} else {
+				log.Printf("not a file: %v", arg)
 			}
 		}
 	} else {
