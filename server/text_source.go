@@ -25,6 +25,7 @@ type TcpTextSource struct {
 	buffer     *circbuf.Buffer
 	bufferSize int64
 	written    int64
+	meta       *SourceMeta
 }
 
 func NewTcpTextSource(conn net.Conn) (s *TcpTextSource, err error) {
@@ -38,12 +39,21 @@ func NewTcpTextSource(conn net.Conn) (s *TcpTextSource, err error) {
 		conn:       conn,
 		buffer:     buffer,
 		bufferSize: bufferSize,
-		written:    0,
+		meta: &SourceMeta{
+			Name: "",
+		},
 	}, nil
 }
 
 func (s *TcpTextSource) Initialize(ctx context.Context) error {
 	return nil
+}
+
+func (s *TcpTextSource) Meta() *SourceMeta {
+	return &SourceMeta{
+		Name:    s.meta.Name,
+		Written: s.written,
+	}
 }
 
 func (s *TcpTextSource) Tail(ctx context.Context, pos Position) (*TailResponse, error) {
@@ -97,10 +107,6 @@ func (s *TcpTextSource) Tail(ctx context.Context, pos Position) (*TailResponse, 
 	}, nil
 }
 
-func (s *TcpTextSource) Written() int64 {
-	return s.written
-}
-
 func (s *TcpTextSource) handle(ctx context.Context, stream *Stream) {
 	if err := s.tail(stream); err != nil {
 		log.Printf("error: %v", err)
@@ -141,8 +147,9 @@ func (s *TcpTextSource) tail(stream *Stream) error {
 
 	log.Printf("[%s] handshake %v", Key, handshake)
 
-	if err := stream.Configure(handshake); err != nil {
-		return err
+	s.meta = &SourceMeta{
+		Name:    handshake.Name,
+		Written: s.written,
 	}
 
 	buf := make([]byte, 4096)

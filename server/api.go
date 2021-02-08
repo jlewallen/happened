@@ -62,11 +62,13 @@ func streamsIndexHandler(sm *StreamManager, res http.ResponseWriter, req *http.R
 	streams := make([]*StreamResponse, 0)
 
 	for key, stream := range sm.streams {
+		meta := stream.source.Meta()
+
 		streams = append(streams, &StreamResponse{
 			Key:     key,
-			Name:    stream.name,
 			URL:     fmt.Sprintf("/v1/streams/%s", key),
-			Written: stream.source.Written(),
+			Name:    meta.Name,
+			Written: meta.Written,
 		})
 	}
 
