@@ -43,7 +43,8 @@ type StreamsResponse struct {
 }
 
 type StreamsSummary struct {
-	Streams int `json:"streams"`
+	Streams int32 `json:"streams"`
+	Version int32 `json:"version"`
 }
 
 type TailResponse struct {
@@ -121,7 +122,8 @@ func streamHandler(sm *StreamManager, res http.ResponseWriter, req *http.Request
 	}
 
 	response.Summary = &StreamsSummary{
-		Streams: len(sm.streams),
+		Streams: int32(len(sm.streams)),
+		Version: sm.counter,
 	}
 
 	response.MoreURL = fmt.Sprintf("/v1/streams/%s?%s", key, response.MoreURL)

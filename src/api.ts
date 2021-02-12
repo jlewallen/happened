@@ -31,20 +31,19 @@ export interface TailResponse {
 interface RealTailResponse {
     blocks: string[] | null;
     more: string;
+    dropped: boolean;
+    summary: {
+        streams: number;
+        version: number;
+    };
 }
 
 export async function tail(url: string): Promise<TailResponse> {
     const response = await run({ url });
     const body: RealTailResponse = await response.json();
-    console.log("response", body);
 
     if (!body.blocks) {
-        console.log(`unimplemented`);
-        return {
-            body: "",
-            empty: true,
-            moreUrl: body.more,
-        };
+        throw new Error(`unimplemented`);
     }
 
     return {

@@ -13,10 +13,15 @@ Vue.use(Vuex);
 
 export class GlobalState {
     public streams: Stream[] = [];
+    public version = 0;
 }
 
 type ActionParameters = ActionContext<GlobalState, GlobalState>;
-
+/*
+                if (state.version != reply.summary.version) {
+                    commit(MutationTypes.VERSION, reply.summary.version);
+                }
+*/
 export default new Vuex.Store<GlobalState>({
     plugins: [createLogger()],
     state: () => new GlobalState(),
@@ -26,7 +31,7 @@ export default new Vuex.Store<GlobalState>({
         },
         [ActionTypes.REFRESH]: async ({ dispatch, commit, state }: ActionParameters, payload: InitializeAction) => {
             await query<{ streams: StreamResponse[] }>("/v1/streams").then((reply) => {
-                console.log(`reply: ${JSON.stringify(reply)}`);
+                // console.log(`reply: ${JSON.stringify(reply)}`);
                 commit(
                     MutationTypes.STREAMS,
                     reply.streams.map((sr) => new Stream(sr))
@@ -37,6 +42,9 @@ export default new Vuex.Store<GlobalState>({
     mutations: {
         [MutationTypes.STREAMS]: (state: GlobalState, streams: Stream[]) => {
             Vue.set(state, "streams", streams);
+        },
+        [MutationTypes.VERSION]: (state: GlobalState, version: number) => {
+            Vue.set(state, "version", version);
         },
     },
     modules: {},
