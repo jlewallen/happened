@@ -18,6 +18,14 @@ type options struct {
 	Address string
 	Port    int
 	Retry   bool
+	Echo    bool
+}
+
+func applyEcho(o *options, writer io.Writer) io.Writer {
+	if o.Echo {
+		return io.MultiWriter(writer, os.Stdout)
+	}
+	return writer
 }
 
 func pipeReader(o *options, hs *common.Handshake, r io.Reader) error {
@@ -40,7 +48,9 @@ func pipeReader(o *options, hs *common.Handshake, r io.Reader) error {
 
 	reader := bufio.NewReader(r)
 
-	if _, err := io.Copy(conn, reader); err != nil {
+	writing := applyEcho(o, conn)
+
+	if _, err := io.Copy(writing, reader); err != nil {
 		return err
 	}
 
@@ -65,6 +75,7 @@ func main() {
 	flag.StringVar(&o.Address, "address", "127.0.0.1", "happened server address")
 	flag.IntVar(&o.Port, "port", 2570, "happened server port")
 	flag.BoolVar(&o.Retry, "retry", true, "retry connection attempts")
+	flag.BoolVar(&o.Echo, "echo", false, "echo received stream to standard out")
 
 	flag.Parse()
 
