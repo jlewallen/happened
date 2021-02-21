@@ -1,5 +1,5 @@
 <template>
-    <pre class="app-logs" @mousedown="down"><TextHighlight :queries="queries">{{ text }}</TextHighlight></pre>
+    <pre class="text-block" @mousedown="down"><TextHighlight :queries="queries">{{ text }}</TextHighlight></pre>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
@@ -113,8 +113,8 @@ export default Vue.extend({
                     !cp.node.parentNode ||
                     !cp.node.parentNode.parentNode ||
                     !(
-                        (cp.node.parentNode as Element).className == "app-logs" ||
-                        (cp.node.parentNode.parentNode as Element).className == "app-logs"
+                        (cp.node.parentNode as Element).className == "text-block" ||
+                        (cp.node.parentNode.parentNode as Element).className == "text-block"
                     )
                 ) {
                     return;
@@ -167,11 +167,8 @@ pre {
     overflow: auto;
 }
 
-.app-logs {
+pre {
     font-size: 80%;
-}
-
-.app-logs {
     padding-top: 0em;
     padding-bottom: 0em;
     margin-top: 0em;

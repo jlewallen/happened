@@ -112,5 +112,6 @@ export default Vue.extend({
 
 pre {
     margin: 0em;
+    font-size: 80%;
 }
 </style>
