@@ -57,13 +57,15 @@ func pipeReader(o *options, hs *common.Handshake, r io.Reader) error {
 	return nil
 }
 
-func pipeFile(o *options, hs *common.Handshake, path string) error {
+func pipeFile(o *options, hs *common.Handshake, path string, fi os.FileInfo) error {
 	r, err := os.Open(path)
 	if err != nil {
 		return err
 	}
 
 	defer r.Close()
+
+	hs.BufferSize = fi.Size()
 
 	return pipeReader(o, hs, r)
 }
@@ -81,12 +83,12 @@ func main() {
 
 	if flag.NArg() > 0 {
 		for _, arg := range flag.Args() {
-			if _, err := os.Stat(arg); !os.IsNotExist(err) {
+			if fi, err := os.Stat(arg); !os.IsNotExist(err) {
 				hs := &common.Handshake{
 					Name: arg,
 				}
 
-				if err := pipeFile(o, hs, arg); err != nil {
+				if err := pipeFile(o, hs, arg, fi); err != nil {
 					panic(err)
 				}
 			} else {

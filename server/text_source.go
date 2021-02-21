@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	BufferSize = int64(4096 * 10)
+	BufferSize = int64(1024 * 1024 * 10)
 	Key        = "<todo>"
 )
 
@@ -29,16 +29,9 @@ type TcpTextSource struct {
 }
 
 func NewTcpTextSource(conn net.Conn) (s *TcpTextSource, err error) {
-	bufferSize := BufferSize
-	buffer, err := circbuf.NewBuffer(bufferSize)
-	if err != nil {
-		return nil, err
-	}
-
 	return &TcpTextSource{
 		conn:       conn,
-		buffer:     buffer,
-		bufferSize: bufferSize,
+		bufferSize: BufferSize,
 		meta: &SourceMeta{
 			Name: "",
 		},
@@ -60,6 +53,10 @@ func (s *TcpTextSource) Tail(ctx context.Context, pos Position) (*TailResponse, 
 	s.lock.Lock()
 
 	defer s.lock.Unlock()
+
+	if s.buffer == nil {
+		return nil, fmt.Errorf("no tail buffer")
+	}
 
 	position := int64(0)
 	if pos.Encoded != nil {
@@ -146,6 +143,19 @@ func (s *TcpTextSource) tail(stream *Stream) error {
 	}
 
 	log.Printf("[%s] handshake %v", Key, handshake)
+
+	if handshake.BufferSize > 0 {
+		s.bufferSize = handshake.BufferSize
+	}
+
+	log.Printf("[%s] allocating buffer (%d)", Key, s.bufferSize)
+
+	buffer, err := circbuf.NewBuffer(s.bufferSize)
+	if err != nil {
+		return err
+	}
+
+	s.buffer = buffer
 
 	s.meta = &SourceMeta{
 		Name:    handshake.Name,

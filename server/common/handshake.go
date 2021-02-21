@@ -16,7 +16,8 @@ const (
 )
 
 type Handshake struct {
-	Name string `json:"name"`
+	Name       string `json:"name"`
+	BufferSize int64  `json:"bufferSize"`
 }
 
 func (h *Handshake) Encode() ([]byte, error) {
