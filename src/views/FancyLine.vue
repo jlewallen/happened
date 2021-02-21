@@ -1,7 +1,7 @@
 <template>
     <div>
-        <pre class="fancy-line"><text-highlight :queries="queries">{{ fancy.text }}</text-highlight></pre>
-        <div v-if="hasExtras" class="extras">
+        <pre class="fancy-line" v-on:click="onClick"><text-highlight :queries="queries">{{ fancy.text }}</text-highlight></pre>
+        <div v-if="hasExtras && expanded" class="extras">
             <div v-for="(o, i) in json" v-bind:key="i">
                 <json-viewer theme="jv-diagnostics" :value="o.parsed" :expand-depth="3" copyable sort v-if="o.parsed" />
             </div>
@@ -9,9 +9,10 @@
     </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import JsonViewer from "vue-json-viewer";
 import TextHighlight from "vue-text-highlight";
+import { Highlighting } from "@/store";
 
 class JSONField {
     public readonly parsed: unknown;
@@ -69,9 +70,13 @@ export default Vue.extend({
             default: () => [],
         },
     },
-    data() {
+    data(): {
+        fancy: FancyLogLine;
+        expanded: boolean;
+    } {
         return {
             fancy: new FancyLogLine(this.line.trim()),
+            expanded: true,
         };
     },
     computed: {
@@ -83,6 +88,12 @@ export default Vue.extend({
         },
         queries(): string[] {
             return this.highlighting.map((h) => h.query);
+        },
+    },
+    methods: {
+        onClick(): void {
+            console.log("this.expanded", this.expanded);
+            this.expanded = !this.expanded;
         },
     },
 });
