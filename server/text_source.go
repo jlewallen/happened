@@ -127,7 +127,7 @@ func (s *TcpTextSource) write(b []byte) error {
 
 	s.written += int64(bytesWrote)
 
-	if false {
+	if true {
 		log.Printf("[%s] write %d", Key, bytesWrote)
 	}
 
@@ -142,10 +142,16 @@ func (s *TcpTextSource) tail(stream *Stream) error {
 		return err
 	}
 
-	log.Printf("[%s] handshake %v", Key, handshake)
+	name := ""
 
-	if handshake.BufferSize > 0 {
-		s.bufferSize = handshake.BufferSize
+	if handshake != nil {
+		log.Printf("[%s] handshake %v", Key, handshake)
+
+		if handshake.BufferSize > 0 {
+			s.bufferSize = handshake.BufferSize
+		}
+
+		name = handshake.Name
 	}
 
 	log.Printf("[%s] allocating buffer (%d)", Key, s.bufferSize)
@@ -158,7 +164,7 @@ func (s *TcpTextSource) tail(stream *Stream) error {
 	s.buffer = buffer
 
 	s.meta = &SourceMeta{
-		Name:    handshake.Name,
+		Name:    name,
 		Written: s.written,
 	}
 
@@ -175,7 +181,7 @@ func (s *TcpTextSource) tail(stream *Stream) error {
 		}
 
 		if bytesRead > 0 {
-			if false {
+			if true {
 				log.Printf("[%s] read %d", Key, bytesRead)
 			}
 
