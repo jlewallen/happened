@@ -7,7 +7,7 @@ export abstract class TailEntry {
 
     constructor(public readonly id: string) {}
 
-    public split(line: number): TailEntry[] {
+    public split(_line: number): TailEntry[] {
         return [this];
     }
 }
@@ -42,6 +42,10 @@ export class FancyLine extends TailEntry {
     }
 }
 
+export class Highlighting {
+    constructor(public readonly query: string) {}
+}
+
 export class TextBlock extends TailEntry {
     public get name(): string {
         return "TextBlock";
@@ -68,10 +72,21 @@ export class TextBlock extends TailEntry {
             new TextBlock(this.id + ".2", after.join("\n")),
         ];
     }
+
+    public line(lineNumber: number): string {
+        const lines = this.text.split("\n");
+        return lines[lineNumber];
+    }
 }
 
 export class LineClicked {
     constructor(public readonly block: TextBlock, public readonly no: number) {}
+
+    public highlighting(): Highlighting[] {
+        const line = this.block.line(this.no);
+        const tasks = line.match(/task-\S+/);
+        return (tasks || []).map((text) => new Highlighting(text));
+    }
 }
 
 export class Tailed {
@@ -96,8 +111,4 @@ export class Tailed {
         );
         return new Tailed(this.key, entries, this.moreUrl);
     }
-}
-
-export class Highlighting {
-    constructor(public readonly query: string) {}
 }

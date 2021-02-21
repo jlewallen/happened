@@ -16,10 +16,6 @@ export default Vue.extend({
         TextHighlight,
     },
     props: {
-        highlighting: {
-            type: Array as PropType<Highlighting[]>,
-            default: () => [],
-        },
         text: {
             type: String,
             required: true,
@@ -27,6 +23,10 @@ export default Vue.extend({
         entry: {
             type: Object as PropType<TextBlock>,
             required: true,
+        },
+        highlighting: {
+            type: Array as PropType<Highlighting[]>,
+            default: () => [],
         },
     },
     computed: {

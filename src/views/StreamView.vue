@@ -5,7 +5,7 @@
             <ControlPanel :stream="stream" v-if="expanded" />
 
             <ScrollContainer @scrolled="onScrolled" v-bind:class="{ expanded: expanded }">
-                <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" />
+                <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" @line-clicked="onLineClicked" />
             </ScrollContainer>
         </div>
     </div>
@@ -16,7 +16,7 @@ import Header from "./Header.vue";
 import ScrollContainer from "./ScrollContainer.vue";
 import Tail from "./Tail.vue";
 import ControlPanel from "./ControlPanel.vue";
-import { Stream, Highlighting } from "@/store/model";
+import { Stream, Highlighting, LineClicked } from "@/store/model";
 
 export default Vue.extend({
     name: "StreamView",
@@ -67,6 +67,10 @@ export default Vue.extend({
                     console.info(`missing #scrolling`);
                 }
             });
+        },
+        onLineClicked(clicked: LineClicked): void {
+            console.log("line-clicked", clicked);
+            this.highlighting = [...this.highlighting, ...clicked.highlighting()];
         },
     },
 });

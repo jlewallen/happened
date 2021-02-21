@@ -56,8 +56,8 @@ export default Vue.extend({
             }
         },
         onLineClicked(clicked: LineClicked): void {
-            console.log("line-clicked", clicked);
             this.tailed = this.tailed.fancyLine(clicked);
+            this.$emit("line-clicked", clicked);
         },
     },
 });

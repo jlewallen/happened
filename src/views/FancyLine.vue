@@ -1,6 +1,6 @@
 <template>
     <div>
-        <pre class="fancy-line">{{ fancy.text }}</pre>
+        <pre class="fancy-line"><text-highlight :queries="queries">{{ fancy.text }}</text-highlight></pre>
         <div v-if="hasExtras" class="extras">
             <div v-for="(o, i) in json" v-bind:key="i">
                 <json-viewer theme="jv-diagnostics" :value="o.parsed" :expand-depth="3" copyable sort v-if="o.parsed" />
@@ -11,6 +11,7 @@
 <script lang="ts">
 import Vue from "vue";
 import JsonViewer from "vue-json-viewer";
+import TextHighlight from "vue-text-highlight";
 
 class JSONField {
     public readonly parsed: unknown;
@@ -56,11 +57,16 @@ class FancyLogLine {
 export default Vue.extend({
     components: {
         "json-viewer": JsonViewer,
+        "text-highlight": TextHighlight,
     },
     props: {
         line: {
             type: String,
             required: true,
+        },
+        highlighting: {
+            type: Array as PropType<Highlighting[]>,
+            default: () => [],
         },
     },
     data() {
@@ -74,6 +80,9 @@ export default Vue.extend({
         },
         hasExtras(): boolean {
             return this.json.length > 0;
+        },
+        queries(): string[] {
+            return this.highlighting.map((h) => h.query);
         },
     },
 });
