@@ -2,10 +2,10 @@
     <div class="stream-view">
         <Header :expanded="expanded" @expanded="onExpandedToggle" @refreshed="onRefreshed" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
-            <ControlPanel :stream="stream" v-if="expanded" />
+            <ControlPanel v-model="controls" v-if="expanded" />
 
             <ScrollContainer @scrolled="onScrolled" v-bind:class="{ expanded: expanded }">
-                <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" @line-clicked="onLineClicked" />
+                <Tail :stream="stream" :highlighting="controls.highlighting" @changed="onChanged" @line-clicked="onLineClicked" />
             </ScrollContainer>
         </div>
     </div>
@@ -15,7 +15,7 @@ import Vue from "vue";
 import Header from "./Header.vue";
 import ScrollContainer from "./ScrollContainer.vue";
 import Tail from "./Tail.vue";
-import ControlPanel from "./ControlPanel.vue";
+import ControlPanel, { Controls } from "./ControlPanel.vue";
 import { Stream, Highlighting, LineClicked } from "@/store/model";
 
 export default Vue.extend({
@@ -27,12 +27,12 @@ export default Vue.extend({
         Tail,
     },
     data(): {
-        highlighting: Highlighting[];
+        controls: Controls;
         expanded: boolean;
         bottom: boolean;
     } {
         return {
-            highlighting: [],
+            controls: new Controls([]),
             expanded: false,
             bottom: true,
         };
@@ -70,7 +70,7 @@ export default Vue.extend({
         },
         onLineClicked(clicked: LineClicked): void {
             console.log("line-clicked", clicked);
-            this.highlighting = [...this.highlighting, ...clicked.highlighting()];
+            this.controls = new Controls([...this.controls.highlighting, ...clicked.highlighting()]);
         },
     },
 });
