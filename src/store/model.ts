@@ -1,10 +1,15 @@
+import _ from "lodash";
 import { StreamResponse, TailResponse } from "@/api";
 
 export abstract class TailEntry {
     public abstract get name(): string;
     public abstract get props(): Record<string, unknown>;
 
-    constructor(public readonly id: number) {}
+    constructor(public readonly id: string) {}
+
+    public split(line: number): TailEntry[] {
+        return [this];
+    }
 }
 
 export class Stream {
@@ -21,6 +26,22 @@ export class Stream {
     }
 }
 
+export class FancyLine extends TailEntry {
+    public get name(): string {
+        return "FancyLine";
+    }
+
+    public get props(): Record<string, unknown> {
+        return {
+            line: this.line,
+        };
+    }
+
+    constructor(public readonly id: string, public readonly line: string) {
+        super(id);
+    }
+}
+
 export class TextBlock extends TailEntry {
     public get name(): string {
         return "TextBlock";
@@ -32,45 +53,51 @@ export class TextBlock extends TailEntry {
         };
     }
 
-    constructor(public readonly id: number, public readonly text: string) {
+    constructor(public readonly id: string, public readonly text: string) {
         super(id);
+    }
+
+    public split(lineNumber: number): TailEntry[] {
+        const lines = this.text.split("\n");
+        const line = lines[lineNumber];
+        const before = lines.slice(0, lineNumber);
+        const after = lines.slice(lineNumber + 1);
+        return [
+            new TextBlock(this.id + ".0", before.join("\n")),
+            new FancyLine(this.id + ".1", line),
+            new TextBlock(this.id + ".2", after.join("\n")),
+        ];
     }
 }
 
-export class FancyLine extends TailEntry {
-    public get name(): string {
-        return "FanceLine";
-    }
-
-    public get props(): Record<string, unknown> {
-        return {
-            text: this.text,
-        };
-    }
-
-    constructor(public readonly id: number, public readonly text: string) {
-        super(id);
-    }
+export class LineClicked {
+    constructor(public readonly block: TextBlock, public readonly no: number) {}
 }
 
 export class Tailed {
-    public moreUrl: string | null = null;
-
-    constructor(public readonly key: string, public readonly entries: TailEntry[] = []) {}
+    constructor(public readonly key: string, public readonly entries: TailEntry[] = [], public readonly moreUrl: string | null = null) {}
 
     public append(res: TailResponse): Tailed {
+        const entries = [...this.entries];
         if (res.body.length > 0) {
-            this.entries.push(new TextBlock(this.entries.length, res.body));
+            entries.push(new TextBlock(`${this.entries.length}`, res.body));
         }
-        this.moreUrl = res.moreUrl;
-        return this;
+        return new Tailed(this.key, entries, res.moreUrl);
+    }
+
+    public fancyLine(line: LineClicked): Tailed {
+        const entries = _.flatten(
+            this.entries.map((entry) => {
+                if (entry == line.block) {
+                    return entry.split(line.no);
+                }
+                return [entry];
+            })
+        );
+        return new Tailed(this.key, entries, this.moreUrl);
     }
 }
 
 export class Highlighting {
     constructor(public readonly query: string) {}
-}
-
-export class LineClicked {
-    constructor(public readonly block: TextBlock, public readonly line: number) {}
 }

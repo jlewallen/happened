@@ -47,7 +47,7 @@ export default Vue.extend({
                 const response = await tail(this.tailed.moreUrl ?? this.stream.url);
 
                 if (!response.empty) {
-                    this.tailed.append(response);
+                    this.tailed = this.tailed.append(response);
 
                     this.$emit("changed");
                 }
@@ -56,7 +56,8 @@ export default Vue.extend({
             }
         },
         onLineClicked(clicked: LineClicked): void {
-            console.log(clicked);
+            console.log("line-clicked", clicked);
+            this.tailed = this.tailed.fancyLine(clicked);
         },
     },
 });

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="fancy-line">{{ fancy.text }}</div>
+        <pre class="fancy-line">{{ fancy.text }}</pre>
         <div v-if="hasExtras" class="extras">
             <div v-for="(o, i) in json" v-bind:key="i">
                 <json-viewer theme="jv-diagnostics" :value="o.parsed" :expand-depth="3" copyable sort v-if="o.parsed" />
@@ -88,5 +88,9 @@ export default Vue.extend({
     // background-color: #333;
     margin-top: 0em;
     margin-bottom: 0em;
+}
+
+pre {
+    margin: 0em;
 }
 </style>

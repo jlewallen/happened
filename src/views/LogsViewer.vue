@@ -48,21 +48,4 @@ export default Vue.extend({
 .logs-container {
     display: inline-block;
 }
-
-pre {
-    // display: inline-block;
-    overflow-x: visible;
-    overflow: auto;
-}
-
-.app-logs {
-    font-size: 80%;
-}
-
-.app-logs {
-    padding-top: 0em;
-    padding-bottom: 0em;
-    margin-top: 0em;
-    margin-bottom: 0em;
-}
 </style>
