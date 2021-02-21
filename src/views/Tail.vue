@@ -1,12 +1,12 @@
 <template>
-    <LogsViewer :tailed="tailed" @fancy-line="onFancyLine" />
+    <LogsViewer :tailed="tailed" :highlighting="highlighting" @line-clicked="onLineClicked" />
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import Bluebird from "bluebird";
 import LogsViewer from "./LogsViewer.vue";
 import { tail } from "@/api";
-import { Stream, Tailed } from "@/store/model";
+import { Stream, Tailed, Highlighting, LineClicked } from "@/store/model";
 
 export default Vue.extend({
     name: "Tail",
@@ -17,6 +17,10 @@ export default Vue.extend({
         stream: {
             type: Object as PropType<Stream>,
             required: true,
+        },
+        highlighting: {
+            type: Array as PropType<Highlighting[]>,
+            default: () => [],
         },
     },
     data(): {
@@ -51,8 +55,8 @@ export default Vue.extend({
                 void Bluebird.delay(5000).then(() => this.refresh());
             }
         },
-        onFancyLine(fancyLine: never): void {
-            this.$emit("fancy-line", fancyLine);
+        onLineClicked(clicked: LineClicked): void {
+            console.log(clicked);
         },
     },
 });

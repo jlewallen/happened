@@ -5,10 +5,10 @@
             <ControlPanel :stream="stream" v-if="expanded" />
             <StreamViewer
                 :stream="stream"
+                :highlighting="highlighting"
                 v-bind:class="{ expanded: expanded }"
                 @changed="onChanged"
                 @scrolled="onScrolled"
-                @fancy-line="onFancyLine"
             />
         </div>
     </div>
@@ -18,7 +18,7 @@ import Vue from "vue";
 import Header from "./Header.vue";
 import StreamViewer from "./StreamViewer.vue";
 import ControlPanel from "./ControlPanel.vue";
-import { Stream } from "@/store/model";
+import { Stream, Highlighting } from "@/store/model";
 
 export default Vue.extend({
     name: "StreamView",
@@ -28,10 +28,12 @@ export default Vue.extend({
         StreamViewer,
     },
     data(): {
+        highlighting: Highlighting[];
         expanded: boolean;
         bottom: boolean;
     } {
         return {
+            highlighting: [],
             expanded: false,
             bottom: true,
         };
@@ -66,9 +68,6 @@ export default Vue.extend({
                     console.info(`missing #scrolling`);
                 }
             });
-        },
-        onFancyLine(fancyLine: never): void {
-            // this.onChanged();
         },
     },
 });

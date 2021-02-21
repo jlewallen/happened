@@ -1,15 +1,15 @@
 <template>
     <div id="scrolling" v-on:scroll="onScroll">
-        <Tail :stream="stream" @changed="onChanged" @fancy-line="onFancyLine" />
+        <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" />
     </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import Tail from "./Tail.vue";
-import { Stream } from "@/store/model";
+import { Stream, Highlighting } from "@/store/model";
 
 export default Vue.extend({
-    name: "StreamViewer",
+    name: "ScrollContainer",
     components: {
         Tail,
     },
@@ -17,6 +17,10 @@ export default Vue.extend({
         stream: {
             type: Object as PropType<Stream>,
             required: true,
+        },
+        highlighting: {
+            type: Array as PropType<Highlighting[]>,
+            default: () => [],
         },
     },
     methods: {
@@ -38,9 +42,6 @@ export default Vue.extend({
 				*/
                 this.$emit("scrolled", { bottom: bottom });
             }
-        },
-        onFancyLine(fancyLine: never): void {
-            this.$emit("fancy-line", fancyLine);
         },
     },
 });
