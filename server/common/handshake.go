@@ -36,39 +36,37 @@ func (h *Handshake) Encode() ([]byte, error) {
 }
 
 func TryParseHandshake(r io.Reader) (reader io.Reader, h *Handshake, err error) {
-	var buf bytes.Buffer
+	var buffer bytes.Buffer
 
-	length := int64(32)
+	ourReader := bufio.NewReader(io.TeeReader(r, &buffer))
 
-	headerReader := bufio.NewReader(io.TeeReader(io.LimitReader(r, length), &buf))
-
-	data := make([]byte, length)
-	if _, err := io.ReadFull(headerReader, data); err != nil {
+	headerCheck := make([]byte, 32)
+	if _, err := io.ReadFull(ourReader, headerCheck); err != nil {
 		return nil, nil, err
 	}
 
 	re := regexp.MustCompile(fmt.Sprintf("%s:(\\d+)", Prefix))
 
-	reader = io.MultiReader(bytes.NewReader(buf.Bytes()), r)
-
-	m := re.FindAllStringSubmatch(string(data), -1)
+	m := re.FindAllStringSubmatch(string(headerCheck), -1)
 	if len(m) > 0 {
 		skipBytes := int64(len(m[0][0]))
 
-		jsonReader := io.MultiReader(bytes.NewReader(buf.Bytes()[skipBytes:]), r)
-
-		decoder := json.NewDecoder(jsonReader)
+		jsonReader := io.MultiReader(bytes.NewReader(headerCheck[skipBytes:]), ourReader)
 
 		h = &Handshake{}
+
+		decoder := json.NewDecoder(jsonReader)
 		if err := decoder.Decode(h); err != nil {
 			return nil, nil, err
 		}
 
+		reader = io.MultiReader(bytes.NewReader(buffer.Bytes()), r)
+
 		skipBytes += decoder.InputOffset()
-
 		log.Printf("skip %d bytes for handshake", skipBytes)
-
 		io.CopyN(ioutil.Discard, reader, skipBytes)
+	} else {
+		reader = io.MultiReader(bytes.NewReader(headerCheck), r)
 	}
 
 	return
