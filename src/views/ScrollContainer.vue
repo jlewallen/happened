@@ -1,28 +1,13 @@
 <template>
     <div id="scrolling" v-on:scroll="onScroll">
-        <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" />
+        <slot />
     </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import Tail from "./Tail.vue";
-import { Stream, Highlighting } from "@/store/model";
 
 export default Vue.extend({
     name: "ScrollContainer",
-    components: {
-        Tail,
-    },
-    props: {
-        stream: {
-            type: Object as PropType<Stream>,
-            required: true,
-        },
-        highlighting: {
-            type: Array as PropType<Highlighting[]>,
-            default: () => [],
-        },
-    },
     methods: {
         onChanged(): void {
             this.$emit("changed");

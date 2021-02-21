@@ -3,20 +3,18 @@
         <Header :expanded="expanded" @expanded="onExpandedToggle" @refreshed="onRefreshed" />
         <div v-if="stream" v-bind:key="stream.key" class="lower">
             <ControlPanel :stream="stream" v-if="expanded" />
-            <StreamViewer
-                :stream="stream"
-                :highlighting="highlighting"
-                v-bind:class="{ expanded: expanded }"
-                @changed="onChanged"
-                @scrolled="onScrolled"
-            />
+
+            <ScrollContainer @scrolled="onScrolled" v-bind:class="{ expanded: expanded }">
+                <Tail :stream="stream" :highlighting="highlighting" @changed="onChanged" />
+            </ScrollContainer>
         </div>
     </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
 import Header from "./Header.vue";
-import StreamViewer from "./StreamViewer.vue";
+import ScrollContainer from "./ScrollContainer.vue";
+import Tail from "./Tail.vue";
 import ControlPanel from "./ControlPanel.vue";
 import { Stream, Highlighting } from "@/store/model";
 
@@ -25,7 +23,8 @@ export default Vue.extend({
     components: {
         Header,
         ControlPanel,
-        StreamViewer,
+        ScrollContainer,
+        Tail,
     },
     data(): {
         highlighting: Highlighting[];
