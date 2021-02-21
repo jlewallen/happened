@@ -92,7 +92,6 @@ export default Vue.extend({
     },
     methods: {
         onClick(): void {
-            console.log("this.expanded", this.expanded);
             this.expanded = !this.expanded;
         },
     },

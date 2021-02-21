@@ -1,6 +1,6 @@
 <template>
     <div class="control-panel">
-        <form @submit.prevent="search">
+        <form @submit.prevent="onApply">
             <div class="row">
                 <div class="col-sm-4">
                     <div class="form-group row">
@@ -20,28 +20,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4" v-if="false">
+                <div class="col-sm-1">
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input class="form-control" type="text" v-model="form.filter" placeholder="Filter" />
+                            <button class="btn btn-primary" type="button" v-on:click="onClear">Clear</button>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input class="form-control" type="text" v-model="form.highlighting" placeholder="Highlight" />
-                        </div>
+                        <div class="col-sm-12"></div>
                     </div>
                 </div>
-                <div class="col-sm-4" v-if="false">
+                <div class="col-sm-7">
                     <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input class="form-control" type="text" v-model="form.filter" placeholder="Filter" />
-                        </div>
+                        <div class="col-sm-12"></div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input class="form-control" type="text" v-model="form.highlighting" placeholder="Highlight" />
-                        </div>
+                        <div class="col-sm-12"></div>
                     </div>
                 </div>
             </div>
@@ -94,17 +88,24 @@ export default Vue.extend({
         this.updateForm();
     },
     methods: {
-        search(): void {
-            console.log(`search`);
-        },
-        updateForm(): void {
-            this.form.highlighting = this.controls.highlighting.map((h) => h.query).join(" ");
+        onClear(): void {
+            this.form = {
+                filter: "",
+                highlighting: "",
+            };
+            this.updateModel();
         },
         onFilter(): void {
             this.updateModel();
         },
         onHighlighting(): void {
             this.updateModel();
+        },
+        onApply(): void {
+            console.log(`apply`);
+        },
+        updateForm(): void {
+            this.form.highlighting = this.controls.highlighting.map((h) => h.query).join(" ");
         },
         updateModel(): void {
             const highlighting = this.form.highlighting.split(" ").map((query) => new Highlighting(query));
